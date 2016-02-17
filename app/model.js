@@ -12,17 +12,17 @@ var UserSchema = new Schema({
     htmlverified: String,
     created_at: {type: Date, default: Date.now},
     updated_at: {type: Date, default: Date.now}
-});
+});//end UserSchema
 
 // Sets the created_at parameter equal to the current time
 UserSchema.pre('save', function(next){
     now = new Date();
     this.updated_at = now;
     if(!this.created_at) {
-        this.created_at = now
+        this.created_at = now;
     }
     next();
-});
+});//end UserSchema
 
 // Indexes this schema in 2dsphere format (critical for running proximity searches)
 UserSchema.index({location: '2dsphere'});

@@ -27,11 +27,11 @@ addCtrl.controller('addCtrl', function($scope, $http, $rootScope, geolocation, g
         $scope.formData.latitude = parseFloat(coords.lat).toFixed(3);
 
         // Display message confirming that the coordinates verified.
-        $scope.formData.htmlverified = "Yep (Thanks for giving us real data!)";
+        $scope.formData.htmlverified = "Yes";
 
         gservice.refresh($scope.formData.latitude, $scope.formData.longitude);
 
-    });
+    });//end geolocation.getLocation
 
     // Functions
     // ----------------------------------------------------------------------------
@@ -42,9 +42,9 @@ addCtrl.controller('addCtrl', function($scope, $http, $rootScope, geolocation, g
         $scope.$apply(function() {
             $scope.formData.latitude = parseFloat(gservice.clickLat).toFixed(3);
             $scope.formData.longitude = parseFloat(gservice.clickLong).toFixed(3);
-            $scope.formData.htmlverified = "Nope (Thanks for spamming my map...)";
-        });
-    });
+            $scope.formData.htmlverified = "No";
+        });//end $scope.$apply
+    });//end $rootScope.$on
 
     // Creates a new user based on the form fields
     $scope.createUser = function() {
@@ -57,7 +57,7 @@ addCtrl.controller('addCtrl', function($scope, $http, $rootScope, geolocation, g
             favlang: $scope.formData.favlang,
             location: [$scope.formData.longitude, $scope.formData.latitude],
             htmlverified: $scope.formData.htmlverified
-        };
+        };//end userData
 
         // Saves the user data to the db
         $http.post('/users', userData)
@@ -76,5 +76,5 @@ addCtrl.controller('addCtrl', function($scope, $http, $rootScope, geolocation, g
             .error(function(data) {
                 console.log('Error: ' + data);
             });
-    };
-});
+    };//end $scope.createUser
+});//end addCtrl.controller

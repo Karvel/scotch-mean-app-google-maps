@@ -20,8 +20,8 @@ angular.module('gservice', [])
 
         // Functions
         // --------------------------------------------------------------
-        // Refresh the Map with new data. Function will take new latitude and longitude coordinates.
-        googleMapService.refresh = function(latitude, longitude) {
+        // Refresh the Map with new data. Takes three parameters (lat, long, and filtering results)
+        googleMapService.refresh = function(latitude, longitude, filteredResults) {
 
             // Clears the holding array of locations
             locations = [];
@@ -30,16 +30,30 @@ angular.module('gservice', [])
             selectedLat = latitude;
             selectedLong = longitude;
 
-            // Perform an AJAX call to get all of the records in the db.
-            $http.get('/users').success(function(response) {
+            // If filtered results are provided in the refresh() call...
+            if (filteredResults) {
 
-                // Convert the results into Google Map Format
-                locations = convertToMapPoints(response);
+                // Then convert the filtered results into map points.
+                locations = convertToMapPoints(filteredResults);
 
-                // Then initialize the map.
-                initialize(latitude, longitude);
-            }).error(function() {});
-        };
+                // Then, initialize the map -- noting that a filter was used (to mark icons yellow)
+                initialize(latitude, longitude, true);
+            }
+
+            // If no filter is provided in the refresh() call...
+            else {
+
+                // Perform an AJAX call to get all of the records in the db.
+                $http.get('/users').success(function(response) {
+
+                    // Then convert the results into map points
+                    locations = convertToMapPoints(response);
+
+                    // Then initialize the map -- noting that no filter was used.
+                    initialize(latitude, longitude, false);
+                }).error(function() {});
+            }
+        };//end googleMapService.refresh
 
         // Private Inner Functions
         // --------------------------------------------------------------
@@ -72,14 +86,14 @@ angular.module('gservice', [])
                     gender: user.gender,
                     age: user.age,
                     favlang: user.favlang
-                });
-            }
+                });//end locations.push
+            }//end for
             // location is now an array populated with records in Google Maps format
             return locations;
-        };
+        };//end convertToMapPoints
 
         // Initializes the map
-        var initialize = function(latitude, longitude) {
+        var initialize = function(latitude, longitude, filter) {
 
             // Uses the selected lat, long as starting point
             var myLatLng = {
@@ -87,7 +101,7 @@ angular.module('gservice', [])
                 lng: selectedLong
             };
 
-            // If map has not been created already...
+            // If map has not been created...
             if (!map) {
 
                 // Create a new map and place in the index.html page
@@ -95,7 +109,15 @@ angular.module('gservice', [])
                     zoom: 3,
                     center: myLatLng
                 });
-            }
+            }//end if
+
+            // If a filter was used set the icons yellow, otherwise blue
+            if (filter) {
+                icon = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+            }//end if
+            else {
+                icon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+            }//end else
 
             // Loop through each location in the array and place a marker
             locations.forEach(function(n, i) {
@@ -103,8 +125,8 @@ angular.module('gservice', [])
                     position: n.latlon,
                     map: map,
                     title: "Big Map",
-                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                });
+                    icon: icon,
+                });//end marker
 
                 // For each marker created, add a listener that checks for clicks
                 google.maps.event.addListener(marker, 'click', function(e) {
@@ -112,8 +134,8 @@ angular.module('gservice', [])
                     // When clicked, open the selected marker's message
                     currentSelectedMarker = n;
                     n.message.open(map, marker);
-                });
-            });
+                });//end addListener
+            });//end forEach
 
             // Set initial location as a bouncing red marker
             var initialLocation = new google.maps.LatLng(latitude, longitude);
@@ -122,7 +144,7 @@ angular.module('gservice', [])
                 animation: google.maps.Animation.BOUNCE,
                 map: map,
                 icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-            });
+            });//end marker
             lastMarker = marker;
 
             // Function for moving to a selected location
@@ -135,28 +157,27 @@ angular.module('gservice', [])
                     animation: google.maps.Animation.BOUNCE,
                     map: map,
                     icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                });
+                });//end marker
 
                 // When a new spot is selected, delete the old red bouncing marker
                 if (lastMarker) {
                     lastMarker.setMap(null);
-                }
+                }//end if
 
                 // Create a new red bouncing marker and move to it
                 lastMarker = marker;
                 map.panTo(marker.position);
 
-                //Update broadcasted variable (lets panels know to change their lat and long values)
+                // Update Broadcasted Variable (lets the panels know to change their lat, long values)
                 googleMapService.clickLat = marker.getPosition().lat();
                 googleMapService.clickLong = marker.getPosition().lng();
                 $rootScope.$broadcast("clicked");
-            });
-
-        };
+            });//end addListener
+        };//end initialize
 
         // Refresh the page upon window load. Use the initial latitude and longitude
         google.maps.event.addDomListener(window, 'load',
             googleMapService.refresh(selectedLat, selectedLong));
 
         return googleMapService;
-    });
+    });//end factory
