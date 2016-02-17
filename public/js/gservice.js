@@ -53,7 +53,7 @@ angular.module('gservice', [])
                     initialize(latitude, longitude, false);
                 }).error(function() {});
             }
-        };//end googleMapService.refresh
+        }; //end googleMapService.refresh
 
         // Private Inner Functions
         // --------------------------------------------------------------
@@ -86,11 +86,11 @@ angular.module('gservice', [])
                     gender: user.gender,
                     age: user.age,
                     favlang: user.favlang
-                });//end locations.push
-            }//end for
+                }); //end locations.push
+            } //end for
             // location is now an array populated with records in Google Maps format
             return locations;
-        };//end convertToMapPoints
+        }; //end convertToMapPoints
 
         // Initializes the map
         var initialize = function(latitude, longitude, filter) {
@@ -107,17 +107,77 @@ angular.module('gservice', [])
                 // Create a new map and place in the index.html page
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 3,
-                    center: myLatLng
+                    center: myLatLng,
+                    styles: [{
+                        "featureType": "water",
+                        "stylers": [{
+                            "visibility": "on"
+                        }, {
+                            "color": "#b5cbe4"
+                        }]
+                    }, {
+                        "featureType": "landscape",
+                        "stylers": [{
+                            "color": "#efefef"
+                        }]
+                    }, {
+                        "featureType": "road.highway",
+                        "elementType": "geometry",
+                        "stylers": [{
+                            "color": "#83a5b0"
+                        }]
+                    }, {
+                        "featureType": "road.arterial",
+                        "elementType": "geometry",
+                        "stylers": [{
+                            "color": "#bdcdd3"
+                        }]
+                    }, {
+                        "featureType": "road.local",
+                        "elementType": "geometry",
+                        "stylers": [{
+                            "color": "#ffffff"
+                        }]
+                    }, {
+                        "featureType": "poi.park",
+                        "elementType": "geometry",
+                        "stylers": [{
+                            "color": "#e3eed3"
+                        }]
+                    }, {
+                        "featureType": "administrative",
+                        "stylers": [{
+                            "visibility": "on"
+                        }, {
+                            "lightness": 33
+                        }]
+                    }, {
+                        "featureType": "road"
+                    }, {
+                        "featureType": "poi.park",
+                        "elementType": "labels",
+                        "stylers": [{
+                            "visibility": "on"
+                        }, {
+                            "lightness": 20
+                        }]
+                    }, {}, {
+                        "featureType": "road",
+                        "stylers": [{
+                            "lightness": 20
+                        }]
+                    }]
+
                 });
-            }//end if
+            } //end if
 
             // If a filter was used set the icons yellow, otherwise blue
             if (filter) {
                 icon = "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-            }//end if
+            } //end if
             else {
                 icon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
-            }//end else
+            } //end else
 
             // Loop through each location in the array and place a marker
             locations.forEach(function(n, i) {
@@ -126,7 +186,7 @@ angular.module('gservice', [])
                     map: map,
                     title: "Big Map",
                     icon: icon,
-                });//end marker
+                }); //end marker
 
                 // For each marker created, add a listener that checks for clicks
                 google.maps.event.addListener(marker, 'click', function(e) {
@@ -134,8 +194,8 @@ angular.module('gservice', [])
                     // When clicked, open the selected marker's message
                     currentSelectedMarker = n;
                     n.message.open(map, marker);
-                });//end addListener
-            });//end forEach
+                }); //end addListener
+            }); //end forEach
 
             // Set initial location as a bouncing red marker
             var initialLocation = new google.maps.LatLng(latitude, longitude);
@@ -144,7 +204,7 @@ angular.module('gservice', [])
                 animation: google.maps.Animation.BOUNCE,
                 map: map,
                 icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-            });//end marker
+            }); //end marker
             lastMarker = marker;
 
             // Function for moving to a selected location
@@ -157,12 +217,12 @@ angular.module('gservice', [])
                     animation: google.maps.Animation.BOUNCE,
                     map: map,
                     icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                });//end marker
+                }); //end marker
 
                 // When a new spot is selected, delete the old red bouncing marker
                 if (lastMarker) {
                     lastMarker.setMap(null);
-                }//end if
+                } //end if
 
                 // Create a new red bouncing marker and move to it
                 lastMarker = marker;
@@ -172,12 +232,12 @@ angular.module('gservice', [])
                 googleMapService.clickLat = marker.getPosition().lat();
                 googleMapService.clickLong = marker.getPosition().lng();
                 $rootScope.$broadcast("clicked");
-            });//end addListener
-        };//end initialize
+            }); //end addListener
+        }; //end initialize
 
         // Refresh the page upon window load. Use the initial latitude and longitude
         google.maps.event.addDomListener(window, 'load',
             googleMapService.refresh(selectedLat, selectedLong));
 
         return googleMapService;
-    });//end factory
+    }); //end factory
