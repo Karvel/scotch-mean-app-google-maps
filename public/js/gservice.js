@@ -185,7 +185,7 @@ angular.module('gservice', [])
                     position: n.latlon,
                     map: map,
                     title: "Big Map",
-                    icon: icon,
+                    icon: icon
                 }); //end marker
 
                 // For each marker created, add a listener that checks for clicks

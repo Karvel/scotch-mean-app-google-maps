@@ -1,7 +1,7 @@
 // app.js
 
 // Declares the initial angular module "meanMapApp". Module grabs other controllers and services. Note the use of ngRoute.
-var app = angular.module('meanMapApp', ['addCtrl', 'queryCtrl', 'geolocation', 'gservice', 'ngRoute'])
+var app = angular.module('meanMapApp', ['addCtrl', 'queryCtrl', 'geolocation', 'gservice', 'ngRoute', 'uiGmapgoogle-maps'])
 
     // Configures Angular routing -- showing the relevant view and controller when needed.
     .config(function($routeProvider){
